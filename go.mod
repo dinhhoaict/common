@@ -1,1 +1,1 @@
-module "common"
+module "github.com/dinhhoaict/common"
