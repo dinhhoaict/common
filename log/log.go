@@ -33,8 +33,8 @@ func Init(lvl string, path string){
 		return level >= zap.DebugLevel
 	})
 
-	errorWritter := getWriter(path + "./error.log")
-	debugWritter := getWriter(path + "./debug.log")
+	errorWritter := getWriter(path + "/error.log")
+	debugWritter := getWriter(path + "/debug.log")
 
 	core := zapcore.NewTee(
 			zapcore.NewCore(zapcore.NewJSONEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(errorWritter), zapcore.AddSync(os.Stdout)), errorLevel),
