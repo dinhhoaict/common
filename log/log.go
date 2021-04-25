@@ -53,6 +53,7 @@ func getLevel(lvl string) zapcore.Level {
 	case INFO:
 		return zapcore.InfoLevel
 	}
+	return zapcore.DebugLevel
 }
 
 func Logger() *zap.Logger {
