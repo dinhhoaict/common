@@ -56,6 +56,14 @@ func (b *buider) SetHTTPProxyWithAuth(host string, port int, username string, pa
 }
 
 func (b *buider) Build() *http.Client{
+	if b.jar == nil {
+		return &http.Client{
+			Transport: &http.Transport{
+				Proxy:           b.proxy,
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}
+	}
 	return &http.Client{
 		Transport: &http.Transport{
 			Proxy:           b.proxy,
