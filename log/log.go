@@ -16,15 +16,16 @@ const (
 	INFO = "info"
 )
 
-var logger *zap.Logger
+var loggerZap *zap.Logger
 func Init(lvl string, path string){
-	if logger == nil {
-		logger, _ = zap.NewProduction()
+	if loggerZap == nil {
+		loggerZap, _ = zap.NewProduction()
 	}
 	encodeConf := zap.NewProductionEncoderConfig()
 	encodeConf.EncodeCaller = zapcore.ShortCallerEncoder
-	encodeConf.EncodeTime = zapcore.RFC3339TimeEncoder
+	encodeConf.EncodeTime = zapcore.RFC3339NanoTimeEncoder
 	encodeConf.EncodeLevel = zapcore.LowercaseLevelEncoder
+	encodeConf.TimeKey = "time"
 	errorLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
 		return level >= zap.ErrorLevel
 	})
@@ -33,14 +34,14 @@ func Init(lvl string, path string){
 		return level >= zap.DebugLevel
 	})
 
-	errorWritter := getWriter(path + "/error.log")
-	debugWritter := getWriter(path + "/debug.log")
+	errorWritter := getWriter(path + "/error")
+	debugWritter := getWriter(path + "/debug")
 
 	core := zapcore.NewTee(
-			zapcore.NewCore(zapcore.NewConsoleEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(errorWritter), zapcore.AddSync(os.Stdout)), errorLevel),
-			zapcore.NewCore(zapcore.NewConsoleEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(debugWritter), zapcore.AddSync(os.Stdout)), debugLevel),
+			zapcore.NewCore(zapcore.NewJSONEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(errorWritter), zapcore.AddSync(os.Stdout)), errorLevel),
+			zapcore.NewCore(zapcore.NewJSONEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(debugWritter), zapcore.AddSync(os.Stdout)), debugLevel),
 		)
-	logger = zap.New(core, zap.AddCaller())
+	loggerZap = zap.New(core, zap.AddCaller())
 
 }
 
@@ -56,14 +57,14 @@ func getLevel(lvl string) zapcore.Level {
 	return zapcore.DebugLevel
 }
 
-func Logger() *zap.Logger {
-	return logger
+func Logger() *zap.SugaredLogger {
+	return loggerZap.Sugar()
 }
 
 func getWriter(filename string) io.Writer {
 	hook, err := rotatelogs.New(
-		filename + ".%Y%m%d%H",
-		rotatelogs.WithLinkName(filename),
+		filename + ".%Y%m%d%H.log",
+		rotatelogs.WithLinkName(filename + ".log"),
 		rotatelogs.WithMaxAge(24 * time.Hour),
 		rotatelogs.WithRotationTime(time.Hour))
 	if err != nil {

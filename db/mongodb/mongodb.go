@@ -88,7 +88,7 @@ func FindOne(db string, coll string, q map[string]interface{}) (bson.M, error) {
 	return result, nil
 }
 
-func Updateone(db string, coll string, q map[string]interface{}, value interface{}) (*mongo.UpdateResult, error) {
+func UpdateOne(db string, coll string, q map[string]interface{}, value interface{}) (*mongo.UpdateResult, error) {
 	var err error
 	query := bson.M{}
 	for k, v := range q {
