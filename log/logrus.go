@@ -1,1 +1,5 @@
 package log
+
+func Logrus(){
+
+}
