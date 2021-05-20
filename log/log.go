@@ -38,8 +38,8 @@ func Init(lvl string, path string){
 	debugWritter := getWriter(path + "/debug")
 
 	core := zapcore.NewTee(
-			zapcore.NewCore(zapcore.NewJSONEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(errorWritter), zapcore.AddSync(os.Stdout)), errorLevel),
-			zapcore.NewCore(zapcore.NewJSONEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(debugWritter), zapcore.AddSync(os.Stdout)), debugLevel),
+			zapcore.NewCore(zapcore.NewConsoleEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(errorWritter), zapcore.AddSync(os.Stdout)), errorLevel),
+			zapcore.NewCore(zapcore.NewConsoleEncoder(encodeConf), zapcore.NewMultiWriteSyncer(zapcore.AddSync(debugWritter), zapcore.AddSync(os.Stdout)), debugLevel),
 		)
 	loggerZap = zap.New(core, zap.AddCaller())
 
